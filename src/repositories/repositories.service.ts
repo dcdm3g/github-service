@@ -1,20 +1,31 @@
+import { url } from '@/common/helpers/url'
 import { GitHubCommit } from '@/common/interfaces/github-commit.interface'
 import { GitHubRepository } from '@/common/interfaces/github-repository.interface'
+import { Repository } from '@/repositories/interfaces/repository.interface'
 import {
   BadGatewayException,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common'
-import { Repository } from '@/repositories/interfaces/repository.interface'
+import { query } from 'express'
 
 @Injectable()
 export class RepositoriesService {
-  async listRepositories(): Promise<Repository[]> {
-    const response = await fetch('https://api.github.com/user/repos', {
-      headers: {
-        Authorization: 'Bearer ' + process.env.GITHUB_TOKEN,
+  async listRepositories(params?: {
+    page?: number
+    per_page?: number
+  }): Promise<Repository[]> {
+    const response = await fetch(
+      url('https://api.github.com/user/repos', {
+        page: params?.page,
+        per_page: params?.per_page,
+      }),
+      {
+        headers: {
+          Authorization: 'Bearer ' + process.env.GITHUB_TOKEN,
+        },
       },
-    })
+    )
 
     if (!response.ok) {
       if (response.status >= 500) {
@@ -61,7 +72,6 @@ export class RepositoriesService {
         stargazers_count,
         forks_count,
         last_commit: lastCommits[index],
-        commits_url,
       }),
     )
   }

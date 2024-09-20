@@ -5,5 +5,5 @@ export interface Repository {
   last_commit: {
     message: string
     date: string
-  }
+  } | null
 }
