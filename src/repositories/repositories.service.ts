@@ -7,7 +7,6 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common'
-import { query } from 'express'
 
 @Injectable()
 export class RepositoriesService {
@@ -42,7 +41,7 @@ export class RepositoriesService {
     const lastCommitPromises = repositories.map(({ commits_url }) => {
       async function getPromise() {
         const response = await fetch(
-          commits_url.replace('{/sha}', '').concat('?per_page=1'),
+          url(commits_url.replace('{/sha}', ''), { per_page: 1 }),
           {
             headers: {
               Authorization: 'Bearer ' + process.env.GITHUB_TOKEN,
@@ -50,7 +49,7 @@ export class RepositoriesService {
           },
         )
 
-        const commits: GitHubCommit[] = await response.json()
+        const commits: [GitHubCommit] = await response.json()
         const raw = commits[0]
 
         return raw
@@ -67,7 +66,7 @@ export class RepositoriesService {
     const lastCommits = await Promise.all(lastCommitPromises)
 
     return repositories.map(
-      ({ name, stargazers_count, forks_count, commits_url }, index) => ({
+      ({ name, stargazers_count, forks_count }, index) => ({
         name,
         stargazers_count,
         forks_count,

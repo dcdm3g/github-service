@@ -12,8 +12,8 @@ export class RepositoriesController {
     @Query('per_page') per_page: number,
   ): Promise<Repository[]> {
     const repositories = await this.repositoriesService.listRepositories({
-      page: page,
-      per_page: per_page,
+      page,
+      per_page,
     })
 
     return repositories
