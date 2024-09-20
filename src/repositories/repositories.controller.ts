@@ -1,6 +1,7 @@
+import { ListRepositoriesQuery } from '@/repositories/dto/list-repositories-query.dto'
 import { Repository } from '@/repositories/interfaces/repository.interface'
 import { RepositoriesService } from '@/repositories/repositories.service'
-import { Controller, Get, Query } from '@nestjs/common'
+import { Controller, Get, ParseIntPipe, Query } from '@nestjs/common'
 
 @Controller('/repositories')
 export class RepositoriesController {
@@ -8,8 +9,7 @@ export class RepositoriesController {
 
   @Get()
   async listRepositories(
-    @Query('page') page: number,
-    @Query('per_page') per_page: number,
+    @Query() { page, per_page }: ListRepositoriesQuery,
   ): Promise<Repository[]> {
     const repositories = await this.repositoriesService.listRepositories({
       page,
